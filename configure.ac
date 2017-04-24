@@ -1,9 +1,9 @@
 # Process this file with autoconf to produce a configure script.
 AC_PREREQ([2.68])
 
-m4_define([project_version_str], m4_esyscmd_s([cat project/VERSION]))
-m4_define([project_name_str], m4_esyscmd_s([cat project/NAME]))
-m4_define([project_email_str], m4_esyscmd_s([cat project/SUPPORT_EMAIL]))
+m4_define([project_version_str], m4_esyscmd_s([cat build-aux/VERSION]))
+m4_define([project_name_str], m4_esyscmd_s([cat build-aux/PROJECT]))
+m4_define([project_email_str], m4_esyscmd_s([cat build-aux/SUPPORT_EMAIL]))
 
 AC_INIT(m4_translit(project_name_str,[ ], [_]),
         m4_translit(project_version_str, [:], [.]),
@@ -23,16 +23,17 @@ AM_INIT_AUTOMAKE([1.10 no-define foreign tar-pax subdir-objects])
 AM_MAINTAINER_MODE
 # allow for silent builds in older version of automake 12.04 lts cough
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES])
+
 dnl disable unnecessary compiler checks
 AC_DEFUN([AC_PROG_F77], [:])
 AC_DEFUN([AC_PROG_FC], [:])
-AC_DEFUN([AC_LIBTOOL_F77], [:])
 AC_DEFUN([AC_PROG_OBJC], [:])
 AC_DEFUN([AC_PROG_OBJCCPP], [:])
+AC_DEFUN([AC_LIBTOOL_F77], [:])
 
 # use platform extensions
 AC_USE_SYSTEM_EXTENSIONS
-AX_CXX_COMPILE_STDCXX_11([noext],[mandatory])
+AX_CXX_COMPILE_STDCXX_14([noext],[mandatory])
 # Checks for programs.
 AC_PROG_CPP
 AC_PROG_CC
@@ -48,7 +49,7 @@ AC_PROG_MKDIR_P
 AC_PROG_LIBTOOL
 AC_MINGW32
 # check if we can format code nicely
-FUMA_AX_ASTYLE([2.03])
+FUMA_AX_ASTYLE([2.05])
 # Check if we can use compiler caching
 FUMA_AX_CCACHE
 # check if we can do code coverage
@@ -78,8 +79,18 @@ AX_BOOST_UNIT_TEST_FRAMEWORK
 AX_BOOST_REGEX
 AX_BOOST_FILESYSTEM
 AX_BOOST_IOSTREAMS
+# see about postgres
+#FUMA_AX_POSTGRES([9.4.0], [],[AC_MSG_ERROR([PostgreSQL was not found in your system])])
+# find the version of webtoolkit libraries
+FUMA_AX_WEBTOOLKIT([3.3.4],[],[
+        AC_ERROR([Could not find suitable version of libWt])
+])
+# find the platform openssl library
+AX_CHECK_OPENSSL
+# generate the output
 
 AC_CONFIG_FILES([Makefile
+                 assets/Makefile
                  sources/Makefile
                  sources/include/Makefile
                  sources/lib/Makefile

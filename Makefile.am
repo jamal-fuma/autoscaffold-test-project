@@ -6,6 +6,7 @@ ACLOCAL_AMFLAGS = -I m4
 BUILT_SOURCES = ChangeLog
 
 SUBDIRS = \
+ assets \
  sources \
  tests \
  .
@@ -15,7 +16,8 @@ EXTRA_DIST = \
  build-aux \
  scripts \
  autogen.sh \
- ChangeLog
+ ChangeLog \
+ VERSION
 
 MAINTAINERCLEANFILES = \
  $(top_srcdir)/config.h.in~ \
@@ -45,9 +47,13 @@ include $(top_srcdir)/build-aux/gcov.mk
 # include ChangeLog target
 include $(top_srcdir)/build-aux/changelog.mk
 
+# include VERSION target
+include $(top_srcdir)/build-aux/version.mk
+
 # include astyle targets
 include $(top_srcdir)/build-aux/astyle.mk
 
-dist-hook: ChangeLog
+dist-hook: ChangeLog VERSION
 
-DISTCLEANFILES=ChangeLog
+CLEANFILES=ChangeLog VERSION
+DISTCLEANFILES=ChangeLog VERSION
