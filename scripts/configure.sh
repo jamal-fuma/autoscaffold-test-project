@@ -42,7 +42,7 @@ if [ "${1}" = "osx" ];
 then
         CTAGS=/usr/local/bin/ctags \
         CTAGSFLAGS="-R --tag-relative=yes --exclude=.git --exclude=build" \
-        ASTYLE_TOOL=/usr/local/Cellar/astyle/2.04/bin/astyle \
+        ASTYLE_TOOL=/usr/local/Cellar/astyle/2.05/bin/astyle \
         ${PROJECT_ROOT}/configure \
             --enable-maintainer-mode \
             --with-ccache=yes \
@@ -54,18 +54,65 @@ then
         ${PROJECT_ROOT}/configure \
                 --enable-maintainer-mode \
                 --enable-debug \
+                --with-ccache=yes \
                 --enable-silent-rules \
-                --with-ccache=yes;
+		--with-webtoolkit-include-dir=/usr/local/include \
+                --with-webtoolkit-library-dir=/usr/local/lib
 fi
 
 if [ "${1}" = "profile" ];
 then
-        ${PROJECT_ROOT}/configure \
+        CC=${CC:-"gcc"} CXX=${CXX:-"g++"} ${PROJECT_ROOT}/configure \
                 --enable-maintainer-mode \
+                --with-ccache=no \
                 --enable-debug \
                 --enable-silent-rules \
                 --enable-gcov;
 fi
+
+if [ "${1}" = "clang" ];
+then
+        CXXFLAGS="-std=c++14" CXX="clang++" CC="clang" \
+        ${PROJECT_ROOT}/configure \
+                --enable-maintainer-mode \
+                --with-ccache=no \
+                --enable-debug \
+                --enable-silent-rules \
+                --with-webtoolkit-include-dir=/usr/local/include \
+                --with-webtoolkit-library-dir=/usr/local/lib
+fi
+
+if [ "${1}" = "clang-analyse" ];
+then
+        CXXFLAGS="-std=c++14" CXX="clang++" CC="clang" scan-build \
+            -analyze-headers \
+            -k \
+            -v \
+            -enable-checker cplusplus \
+            -enable-checker deadcode \
+            -enable-checker security \
+            -enable-checker unix \
+        ${PROJECT_ROOT}/configure \
+                --enable-maintainer-mode \
+                --with-ccache=no \
+                --enable-debug \
+                --enable-silent-rules \
+                --with-webtoolkit-include-dir=/usr/local/include \
+                --with-webtoolkit-library-dir=/usr/local/lib
+fi
+
+if [ "${1}" = "gcc-asan" ];
+then
+        CXXFLAGS="-std=c++14 -fsanitize=address -Wfatal-errors -Werror" CXX="g++" CC="gcc" LDFLAGS="-fsanitize=address -static-libasan -lasan"
+        ${PROJECT_ROOT}/configure \
+                --enable-maintainer-mode \
+                --with-ccache=no \
+                --enable-debug \
+                --enable-silent-rules \
+                --with-webtoolkit-include-dir=/usr/local/include \
+                --with-webtoolkit-library-dir=/usr/local/lib
+fi
+
 
 if [ "${1}" = "centos" ];
 then
