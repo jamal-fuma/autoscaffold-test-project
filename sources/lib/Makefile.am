@@ -1,19 +1,18 @@
 # sources/lib/Makefile.am
 
+include $(top_srcdir)/build-aux/source_common.mk
+
 SUBDIRS = \
  .
-
-include $(top_srcdir)/build-aux/source_common.mk
 
 AM_LDFLAGS = $(LINKER_FLAGS)
 AM_CPPFLAGS = $(COMPILE_FLAGS)
 
+# noinst_HEADERS =
+# noinst_LTLIBRARIES =
 # lib_LTLIBRARIES =
 
-# noinst_HEADERS = 
-
 # libFumaLibrary_la_SOURCES =
-
 # libFumaLibrary_la_LIBADD  = $(LINKER_LIBS)
 
 MAINTAINERCLEANFILES = \
