@@ -49,7 +49,7 @@ AC_DEFUN([AC_TDD_GCOV_CHECK_PROGRAMS],[dnl
  AC_CHECK_PROG(LCOV, lcov, lcov)
  AS_IF([test "$LCOV"],
      [lcov_version=`$LCOV -v 2>/dev/null | $SED -e 's/^.* //'`;
-     m4_foreach([lcov_check_version], [[1.6],[1.7], [1.8],[1.9],[1.10]],
+     m4_foreach([lcov_check_version], [[1.6],[1.7], [1.8],[1.9],[1.10],[1.11],[1.12]],
          [AS_IF([test "$lcov_version" = "lcov_check_version"],
              [glib_cv_lcov_version="lcov_check_version (ok)"])
          ])
@@ -57,7 +57,7 @@ AC_DEFUN([AC_TDD_GCOV_CHECK_PROGRAMS],[dnl
 
  dnl is the version suitable
  AS_IF([test "${glib_cv_lcov_version}" = "invalid"],
- [AC_MSG_ERROR([To enable code coverage reporting you need a lcov version in the range (1.6 .. 1.10)])],
+ [AC_MSG_ERROR([To enable code coverage reporting you need a lcov version in the range (1.6 .. 1.12)])],
  [AC_TDD_GCOV_SET_PROGRAMS])
 #---------------------------------------------------------------
 # AC_TDD_GCOV_CHECK_PROGRAMS end
@@ -137,11 +137,11 @@ AC_DEFUN([AC_TDD_GCOV_SET_COVERAGE_FLAGS],[dnl
 #---------------------------------------------------------------
 
  # Add the special gcc flags
- ac_tdd_gcov_compile_flags="--coverage -fno-default-inline -fno-inline  -fno-elide-constructors -fno-inline-small-functions"
-
+ # "-fno-default-inline -fno-inline  -fno-elide-constructors -fno-inline-small-functions"
+ ac_tdd_gcov_compile_flags="-fprofile-arcs -ftest-coverage -fno-inline -fno-elide-constructors"
  COVERAGE_CFLAGS="${ac_tdd_gcov_compile_flags}"
  COVERAGE_CXXFLAGS="${ac_tdd_gcov_compile_flags}"
- COVERAGE_LDFLAGS="--coverage -lgcov"
+ COVERAGE_LDFLAGS="--coverage"
 
  AC_SUBST(COVERAGE_CFLAGS)
  AC_SUBST(COVERAGE_CXXFLAGS)

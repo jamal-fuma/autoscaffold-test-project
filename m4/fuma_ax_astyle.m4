@@ -48,6 +48,9 @@ AC_DEFUN([FUMA_AX_ASTYLE_FLAGS],[dnl
     #  converting tabs to spaces in the non-indentation part of the line.
     ASTYLE_FLAGS="${ASTYLE_FLAGS} --indent-preprocessor --convert-tabs"
 
+    # sort out preprocessor blocks
+    ASTYLE_FLAGS="${ASTYLE_FLAGS} --indent-preproc-block"
+
     # Remove  extra  space  padding around parenthesis on the inside and outside.
     ASTYLE_FLAGS="${ASTYLE_FLAGS} --unpad-paren"
 
@@ -56,6 +59,21 @@ AC_DEFUN([FUMA_AX_ASTYLE_FLAGS],[dnl
 
     # Indent 'class' and 'struct' blocks so access modifiers are indented
     ASTYLE_FLAGS="${ASTYLE_FLAGS} --indent-classes"
+
+    # Indent comments properly
+    ASTYLE_FLAGS="${ASTYLE_FLAGS} --indent-col1-comments"
+
+    # Remove empty line within the method blocks
+    ASTYLE_FLAGS="${ASTYLE_FLAGS} --delete-empty-lines"
+
+    # sort out extern C blocks
+    ASTYLE_FLAGS="${ASTYLE_FLAGS} --attach-extern-c"
+
+    # add brackets to single line conditionals
+    ASTYLE_FLAGS="${ASTYLE_FLAGS} --add-brackets"
+
+    # sort out wrapped lines
+    ASTYLE_FLAGS="${ASTYLE_FLAGS} --max-instatement-indent=40"
 
     ASTYLE="${$1} ${ASTYLE_FLAGS}"
     AC_SUBST([ASTYLE])
@@ -71,14 +89,14 @@ AC_DEFUN([FUMA_AX_ASTYLE],[dnl
     dnl try and find the binary
     FUMA_AX_SET_AX_ASTYLE_VERSION([$1],[astyle_desired])
     AC_MSG_CHECKING(["for astyle version >= ${fuma_ax_astyle_desired_version_number}"])
-    AC_CHECK_PROG([ASTYLE_TOOL], [astyle], [astyle])
+    AC_PATH_PROG([ASTYLE_TOOL], [astyle], [])
 
     dnl work out the version number
     AS_IF([test "x${ASTYLE_TOOL}" = "x"],
         [AC_MSG_RESULT(["astyle was not found in the search path"])],
         [AC_MSG_RESULT(["astyle found in path as ${ASTYLE_TOOL}"])])
 
-    AS_IF([test "x${ASTYLE_TOOL}" = "x"],[],[
+    AS_IF([test "x${ASTYLE_TOOL}" = "x"],[FUMA_AX_SET_AX_ASTYLE_VERSION([0.0.0.0], [astyle_actual])],[
         astyle_version_number=`${ASTYLE_TOOL} --version 2>&1 | ${AWK} '{ print $NF; }'`
         FUMA_AX_SET_AX_ASTYLE_VERSION([$astyle_version_number], [astyle_actual])])
 
