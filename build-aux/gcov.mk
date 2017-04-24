@@ -2,8 +2,8 @@ if HAVE_GCOV
 .PHONY: clean-gcda
 clean-gcda:
 	@echo Removing old coverage results
-	-find $(abs_top_builddir) -name '*.gcda' -print | xargs -r rm
-	-find $(abs_top_builddir) -name '*.gcno' -print | xargs -r rm
+	-find $(abs_top_builddir) -name '*.gcda' -print | xargs rm -f
+	-find $(abs_top_builddir) -name '*.gcno' -print | xargs rm -f
 
 .PHONY: coverage-html generate-coverage-html clean-coverage-html coverage_base.info coverage_delta.info coverage.info
 coverage-html:
@@ -22,15 +22,17 @@ coverage_base.info:
 		-b $(abs_top_builddir) \
 		--directory $(abs_top_builddir) \
 		--output-file $(abs_top_builddir)/coverage_base.info \
+		--ignore-errors graph \
 		--compat-libtool
-
 
 	@echo Stripping external coverage data from baseline
 	$(LCOV) \
 		--remove $(abs_top_builddir)/coverage_base.info \
 		"/usr*" \
 		"/opt*" \
-	-o $(abs_top_builddir)/coverage_base.info
+		"$(abs_top_srcdir)/sources/include/3rd_party*" \
+		"/Applications*" \
+		--output-file $(abs_top_builddir)/coverage_base.info
 
 coverage_delta.info:
 	@echo Collecting delta coverage data
@@ -40,6 +42,7 @@ coverage_delta.info:
 		-b $(abs_top_builddir) \
 		--directory $(abs_top_builddir) \
 		--output-file $(abs_top_builddir)/coverage_delta.info \
+		--ignore-errors graph \
 		--compat-libtool
 
 	@echo Stripping external coverage data from delta
@@ -47,7 +50,9 @@ coverage_delta.info:
 		--remove $(abs_top_builddir)/coverage_delta.info \
 		"/usr*" \
 		"/opt*" \
-		-o $(abs_top_builddir)/coverage_delta.info
+		"$(abs_top_srcdir)/sources/include/3rd_party*" \
+		"/Applications*" \
+		--output-file $(abs_top_builddir)/coverage_delta.info
 
 coverage.info:
 		@echo Combining baseline and delta coverage data
